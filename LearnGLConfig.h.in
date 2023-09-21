@@ -1,0 +1,4 @@
+// config options and settings
+#define LearnGL_VERSION_MAJOR @LearnGL_VERSION_MAJOR@
+#define LearnGL_VERSION_MINOR @LearnGL_VERSION_MINOR@
+#define PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
