@@ -19,12 +19,12 @@ add_executable(MyAnswer
 	# "${PROJECT_SOURCE_DIR}/GLTEST/main.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/GLMTest.cpp"
 	"${PROJECT_SOURCE_DIR}/GLTEST/CoordsSys.cpp"
-	"${PROJECT_SOURCE_DIR}/GLTEST/CustomShader.cpp"
+	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/texture.cpp"
 	)
 add_executable(ExerciseAnswer
-	"${PROJECT_SOURCE_DIR}/GLTEST/CustomShader.cpp"
+	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
 	"${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
 	# "${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
