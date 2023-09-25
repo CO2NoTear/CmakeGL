@@ -12,10 +12,11 @@
 #include "stb_image.h"
 #include "utils.h"
 
+// static Camera *camera;
+Camera camera;
 int main() {
   unsigned int SCR_WIDTH = 800;
   unsigned int SCR_HEIGHT = 600;
-  GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
   glm::mat4 model = glm::mat4(1.0f);
   // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f,
   // 0.0f));
@@ -25,6 +26,23 @@ int main() {
   glm::mat4 ortho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
   glm::mat4 perspective =
       glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+  glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+  glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+  // normalized vec3 for camera moving direction (opposite to the direction
+  // where we are looking at)
+  glm::vec3 cameraMovingDirection = glm::normalize(cameraPos = cameraTarget);
+  // right direction of the camera moving direction
+  // applying Schmidt Process
+  glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::vec3 cameraRight =
+      glm::normalize(glm::cross(worldUp, cameraMovingDirection));
+  glm::vec3 cameraUp =
+      glm::normalize(glm::cross(cameraMovingDirection, cameraRight));
+
+  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  camera = Camera(cameraPos, cameraFront, worldUp);
+  camera.setSpeed(3.0f);
+  GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
 
   std::string shaderPath = JoinProjectAbsolutePath("GLTEST");
   Shader shaderProgram((shaderPath + "allCoordsSys.vs").c_str(),
@@ -116,7 +134,8 @@ int main() {
   // 为当前绑定的纹理对象设置环绕、过滤方式
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // 加载并生成纹理
   int width, height, nrChannels;
@@ -138,7 +157,8 @@ int main() {
   // 为当前绑定的纹理对象设置环绕、过滤方式
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // 加载并生成纹理
   stbi_set_flip_vertically_on_load(true);
@@ -158,6 +178,7 @@ int main() {
 
   glEnable(GL_DEPTH_TEST);
 
+  // the following steps shows how the GL compute a camera coords system
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
@@ -182,6 +203,21 @@ int main() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
+    view = glm::mat4(1.0f);
+    /*
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -12.0f));
+    view = glm::rotate(view, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f,
+    0.0f)); view = glm::translate(view, glm::vec3(0.0f, 0.0f, 6.0f));
+    */
+    // float radius = 10.0f;
+    // cameraPos = glm::vec3(sin(glfwGetTime()) * radius, 0.0f,
+    //                       cos(glfwGetTime()) * radius);
+    // view = glm::lookAt(cameraPos, cameraTarget, worldUp);
+    // shaderProgram.setMat4("view", view);
+    view = camera.updateView();
+    shaderProgram.setMat4("view", view);
+
+    // std::cout << glad_glGetError() << std::endl;
     for (unsigned int i = 0; i < 10; i++) {
       model = glm::mat4(1.0f);
       model = glm::translate(model, cubePositions[i]);
@@ -191,7 +227,7 @@ int main() {
       shaderProgram.setMat4("model", model);
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
-      std::cout << glad_glGetError() << std::endl;
+      // std::cout << glad_glGetError() << std::endl;
     }
     // glDrawArrays(GL_TRIANGLES, 0, 36);
     // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
