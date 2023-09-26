@@ -13,7 +13,6 @@
 #include "utils.h"
 
 // static Camera *camera;
-Camera camera;
 int main() {
   unsigned int SCR_WIDTH = 800;
   unsigned int SCR_HEIGHT = 600;
@@ -39,9 +38,9 @@ int main() {
   glm::vec3 cameraUp =
       glm::normalize(glm::cross(cameraMovingDirection, cameraRight));
 
-  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-  camera = Camera(cameraPos, cameraFront, worldUp);
-  camera.setSpeed(3.0f);
+  glm::vec3 cameraFront = glm::vec3(0.0f, -0.5f, -1.0f);
+  *camera = Camera(cameraPos, cameraFront, worldUp);
+  camera->setSpeed(3.0f);
   GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
 
   std::string shaderPath = JoinProjectAbsolutePath("GLTEST");
@@ -214,7 +213,7 @@ int main() {
     //                       cos(glfwGetTime()) * radius);
     // view = glm::lookAt(cameraPos, cameraTarget, worldUp);
     // shaderProgram.setMat4("view", view);
-    view = camera.updateView();
+    view = camera->updateView();
     shaderProgram.setMat4("view", view);
 
     // std::cout << glad_glGetError() << std::endl;

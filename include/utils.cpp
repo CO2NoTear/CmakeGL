@@ -9,7 +9,56 @@
 
 #include "utils.h"
 
-// static Camera *camera;
+glm::mat4 Camera::updateView() {
+  view_ = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
+  return view_;
+}
+void Camera::setSpeed(const float val) { cameraSpeed_ = val; }
+void Camera::setFov(const float val) { fov = val; }
+const float Camera::getFov() { return fov; }
+const glm::vec3 Camera::getPos() { return cameraPos_; }
+void Camera::move(GLFWwindow *window) {
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+  float currentTime = glfwGetTime();
+  deltaTime = currentTime - lastTime;
+  lastTime = currentTime;
+  float cameraSpeed = cameraSpeed_ * deltaTime;
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    cameraPos_ += cameraSpeed * cameraFront_;
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    cameraPos_ -= cameraSpeed * cameraFront_;
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    cameraPos_ -=
+        glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    cameraPos_ +=
+        glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
+  if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    cameraPos_ += cameraSpeed * cameraUp_;
+  if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    cameraPos_ -= cameraSpeed * cameraUp_;
+}
+void Camera::mouse(float xoffset, float yoffset) {
+  yaw += xoffset;
+  pitch += yoffset;
+
+  if (pitch > 89.0f) pitch = 89.0f;
+  if (pitch < -89.0f) pitch = -89.0f;
+
+  glm::vec3 front;
+  front.y = sin(glm::radians(pitch));
+  front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+  front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+  cameraFront_ = glm::normalize(front);
+}
+Camera::Camera(glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp)
+  : cameraPos_(cameraPos), cameraFront_(cameraFront), cameraUp_(cameraUp) {
+  cameraSpeed_ = 50.0f;
+}
+Camera::Camera() {}
+
+Camera *camera = new Camera();
 
 GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
                        const unsigned int SCR_HEIGHT) {
@@ -34,6 +83,7 @@ GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
+  glfwSetScrollCallback(window, scroll_callback);
 
   // glad: load all OpenGL function pointers
   // ---------------------------------------
@@ -50,7 +100,7 @@ GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
 void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
-  camera.move(window);
+  camera->move(window);
 }
 // void processInput(GLFWwindow *window, Camera *camera) {
 //   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -66,6 +116,12 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   // and height will be significantly larger than specified on retina displays.
   glViewport(0, 0, width, height);
 }
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+  if (camera->getFov() >= 1.0f && camera->getFov() <= 45.0f)
+    camera->setFov(camera->getFov() - yoffset);
+  if (camera->getFov() <= 1.0f) camera->setFov(1.0f);
+  if (camera->getFov() >= 45.0f) camera->setFov(45.0f);
+}
 void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
   static float lastX = 400, lastY = 300;
   // std::cout << "x = " << xpos << "; y = " << ypos << std::endl;
@@ -77,7 +133,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
   xoffset *= sensitivity;
   yoffset *= sensitivity;
 
-  camera.mouse(xoffset, yoffset);
+  camera->mouse(xoffset, yoffset);
 }
 
 std::string JoinProjectAbsolutePath(std::string src) {
