@@ -2,6 +2,7 @@
 struct Material {
     vec3 ambient;
     vec3 diffuse;
+    // uniform sampler2D;
     vec3 specular;
     float shininess;
 }; 
@@ -27,7 +28,7 @@ void main()
 {
     // ambient lighting
     // float ambientStrength = 0.1;
-    vec3 ambient = material.ambient * lightColor;
+    vec3 ambient = material.ambient * light.ambient;
 
     // normalization reduces the computation wightload
     vec3 norm = normalize(Normal);
@@ -41,12 +42,12 @@ void main()
     float spec = pow(max(0.0, dot(viewDir, reflectDir)), material.shininess);
     // specular lighting is basically considering
     // how much source light can be seen by the viewer
-    vec3 specular = lightColor * (material.specular * spec);
+    vec3 specular = light.specular * (material.specular * spec);
 
     // diffuse lighting
     // compute the angle (negative for no light, so 0 is set)
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = lightColor * (diff * material.diffuse);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
 
     vec3 result = (ambient + diffuse + specular); 

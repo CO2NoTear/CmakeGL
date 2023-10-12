@@ -148,6 +148,10 @@ int main() {
   lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
   lightShader.setFloat("material.shininess", 32.0f);
 
+  lightShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+  lightShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+  lightShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
   glEnable(GL_DEPTH_TEST);
 
   // the following steps shows how the GL compute a camera coords system
