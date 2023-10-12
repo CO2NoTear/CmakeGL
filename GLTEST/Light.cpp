@@ -192,6 +192,20 @@ int main() {
     lightShader.setVec3("viewPos", camera->getPos());
     lightShader.setMat4("view", view);
     lightShader.setMat4("projection", perspective);
+
+    glm::vec3 lampColor;
+    lampColor.x = sin(glfwGetTime() * 2.0f);
+    lampColor.y = sin(glfwGetTime() * 0.7f);
+    lampColor.z = sin(glfwGetTime() * 1.3f);
+
+    glm::vec3 diffuseColor =
+        lampColor * glm::vec3(0.5f);    // lower the influence on diffuse
+    glm::vec3 ambientColor =
+        lampColor * glm::vec3(0.2f);    // lower the influence on ambient
+
+    lightShader.setVec3("light.ambient", ambientColor);
+    lightShader.setVec3("light.diffuse", diffuseColor);
+
     lampShader.use();
     lampShader.setMat4("view", view);
     lampShader.setMat4("projection", perspective);
