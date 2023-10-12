@@ -143,10 +143,17 @@ int main() {
   lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
   lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
   // Material settings:
-  lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-  lightShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-  lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-  lightShader.setFloat("material.shininess", 32.0f);
+  // Bronze
+  // lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+  // lightShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+  // lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+  // lightShader.setFloat("material.shininess", 32.0f);
+
+  // emerald
+  lightShader.setVec3("material.ambient", 0.0215, 0.1745, 0.0215);
+  lightShader.setVec3("material.diffuse", 0.07568, 0.61424, 0.07568);
+  lightShader.setVec3("material.specular", 0.633, 0.727811, 0.633);
+  lightShader.setFloat("material.shininess", 0.6f * 128);
 
   lightShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
   lightShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
