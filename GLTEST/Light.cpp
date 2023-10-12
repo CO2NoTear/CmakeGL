@@ -38,15 +38,11 @@ int main() {
   Shader lightShader((shaderPath + "light.vs").c_str(),
                      (shaderPath + "light.fs").c_str());
   lightShader.use();
-  int projectionLocation = glGetUniformLocation(lightShader.ID, "projection");
-  // glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-  glUniformMatrix4fv(projectionLocation, 1, GL_FALSE,
-                     glm::value_ptr(perspective));
+  lightShader.setMat4("projection", perspective);
   lampShader.use();
   lampShader.setMat4("model", model);
+  lampShader.setMat4("projection", perspective);
   // glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-  glUniformMatrix4fv(projectionLocation, 1, GL_FALSE,
-                     glm::value_ptr(perspective));
   // float vertices[] = {
   //     //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
   //     0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,    // 右上
@@ -137,12 +133,20 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        (void *)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 
   lightShader.use();
   lightShader.setMat4("model", glm::mat4(1.0f));
-  lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+  // lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
   lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
   lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+  // Material settings:
+  lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+  lightShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+  lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+  lightShader.setFloat("material.shininess", 32.0f);
 
   glEnable(GL_DEPTH_TEST);
 

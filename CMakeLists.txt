@@ -31,8 +31,8 @@ add_executable(CameraProj
 add_executable(ExerciseAnswer
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
-	"${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
-	# "${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
+	# "${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
+	"${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
 )
 
 find_package(glfw3 3.3 REQUIRED)

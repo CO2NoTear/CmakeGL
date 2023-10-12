@@ -12,6 +12,7 @@
 
 Shader::Shader(const char *vertexPath, const char *fragmentPath) {
   std::cerr << "receiving source from: " << vertexPath << std::endl;
+  std::cerr << "receiving source from: " << fragmentPath << std::endl;
   // Step1. get source code from file
   std::string vertexCode;
   std::string fragmentCode;
