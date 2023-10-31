@@ -6,6 +6,7 @@
 
 #include "CustomShader.h"
 #include "LearnGLConfig.h"
+#include "glm/gtc/type_ptr.hpp"
 #include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -68,11 +69,25 @@ int main() {
   //        1, 2, 3   // second Triangle
   //    };
   float vertices[] = {// position			//color
-                      -0.5f, 0.0f, 0.0f,  0.5f,  0.0f,   0.0f,  0.0f,  0.0f,
-                      0.0f,  0.0f, 0.5f,  0.0f,  -0.25f, 0.5f,  0.0f,  0.0f,
-                      0.0f,  0.5f, 0.25f, 0.5f,  0.0f,   0.25f, 0.25f, 0.0f,
-                      0.5f,  0.0f, 0.0f,  0.25f, 0.0f,   0.25f};
+                      -0.5,-0.5,-0.5, 0.5,-0.5,-0.5, 0.5,0.5,-0.5, -0.5,0.5,-0.5,
+ -0.5,-0.5,0.5, 0.5,-0.5,0.5, 0.5,0.5,0.5, -0.5,0.5,0.5,
+ 0.0,0.0,0.0, 1.0,0.0,0.0, 1.0,1.0,0.0, 0.0,1.0,0.0,
+ 0.0,0.0,1.0, 1.0,0.0,1.0, 1.0,1.0,1.0, 0.0,1.0,1.0};
   unsigned int indices[] = {0, 1, 2, 1, 3, 4};
+  unsigned int indices2[] = {
+3, 1, 2,
+1, 0, 3,
+3, 6, 2,
+3, 7, 6,
+7, 0, 4,
+7, 3, 0,
+6, 5, 1,
+2, 1, 6,
+5, 6, 7,
+4, 5, 7,
+4, 0, 1,
+5, 1, 4,
+  };
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -85,18 +100,18 @@ int main() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2,
                GL_STATIC_DRAW);
 
   //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
   //    (void*)0);
   // position
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   // it enables location at 0 to apply the attributes
   glEnableVertexAttribArray(0);
   // color
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                        (void *)(3 * sizeof(float)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                        (void *)(24 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   // note that this is allowed, the call to glVertexAttribPointer registered VBO
@@ -119,15 +134,46 @@ int main() {
 
   // render loop
   // -----------
+  glm::mat4 view = glm::mat4(1.0f);
+  view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+  glm::mat4 perspective =
+      glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+  glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+  glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+  // normalized vec3 for camera moving direction (opposite to the direction
+  // where we are looking at)
+  glm::vec3 cameraMovingDirection = glm::normalize(cameraPos = cameraTarget);
+  // right direction of the camera moving direction
+  // applying Schmidt Process
+  glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::vec3 cameraRight =
+      glm::normalize(glm::cross(worldUp, cameraMovingDirection));
+  glm::vec3 cameraUp =
+      glm::normalize(glm::cross(cameraMovingDirection, cameraRight));
+
+  glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+  *camera = Camera(cameraPos, cameraFront, worldUp);
+  camera->setSpeed(3.0f);
+  shader.use();
+  shader.setMat4("view", view);
+  shader.setMat4("projection", perspective);
+
+
+  glEnable(GL_DEPTH_TEST);
   while (!glfwWindowShouldClose(window)) {
     // input
     // -----
     processInput(window);
+    std::cout<<cameraPos.x<<cameraPos.y<<cameraPos.z<<std::endl;
+    view = camera->updateView();
+    shader.setMat4("view", view);
+
 
     // render
     // ------
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // draw our first triangle
     // glUseProgram(shaderProgram);
@@ -135,8 +181,8 @@ int main() {
     glBindVertexArray(VAO);    // seeing as we only have a single VAO there's no
                                // need to bind it every time, but we'll do so to
                                // keep things a bit more organized
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved

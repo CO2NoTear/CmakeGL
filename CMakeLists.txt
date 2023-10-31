@@ -36,9 +36,9 @@ add_subdirectory(glad_dependency)
 LINK_LIBRARIES(GLAD)
 # 格式： add_executable(PROJECT_NAME, [Source...])
 add_executable(MyAnswer
-	# "${PROJECT_SOURCE_DIR}/GLTEST/main.cpp"
+	"${PROJECT_SOURCE_DIR}/GLTEST/main.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/GLMTest.cpp"
-	"${PROJECT_SOURCE_DIR}/GLTEST/Light.cpp"
+	# "${PROJECT_SOURCE_DIR}/GLTEST/Light.cpp"
 	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
