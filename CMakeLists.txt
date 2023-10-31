@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(LearnGL VERSION 1.0)
 
+message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
+message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
 set(CMAKE_CXX_STANDARD 17)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Windows平台的配置
 	set(GLFW_PATH "D:/OpenGL")
@@ -42,6 +44,7 @@ add_executable(MyAnswer
 	# "${PROJECT_SOURCE_DIR}/GLTEST/texture.cpp"
 	)
 add_executable(CameraProj
+	"${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	"${PROJECT_SOURCE_DIR}/GLTEST/CoordsSys.cpp"
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
@@ -49,6 +52,7 @@ add_executable(CameraProj
 add_executable(ExerciseAnswer
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
+	"${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	# "${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
 	"${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
 )
@@ -78,5 +82,3 @@ target_include_directories(ExerciseAnswer PUBLIC
 	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
-message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
-message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")

@@ -6,8 +6,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <string>
 
 #define STB_IMAGE_IMPLEMENTATION
+#include "LearnGLConfig.h"
 #include "CustomShader.h"
 #include "stb_image.h"
 #include "utils.h"
@@ -139,7 +141,7 @@ int main() {
   // 加载并生成纹理
   int width, height, nrChannels;
   unsigned char *data =
-      stbi_load("/Users/co2notear/CLionProjects/LearnGL/resource/container.jpg",
+      stbi_load((PROJECT_SOURCE_DIR + std::string("/resource/container.jpg")).c_str(),
                 &width, &height, &nrChannels, 0);
   if (data) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
@@ -161,9 +163,9 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // 加载并生成纹理
   stbi_set_flip_vertically_on_load(true);
-  data = stbi_load(
-      "/Users/co2notear/CLionProjects/LearnGL/resource/awesomeface.png", &width,
-      &height, &nrChannels, 0);
+  data = 
+      stbi_load((PROJECT_SOURCE_DIR + std::string("/resource/awesomeface.png")).c_str(),
+                &width, &height, &nrChannels, 0);
   if (data) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, data);
