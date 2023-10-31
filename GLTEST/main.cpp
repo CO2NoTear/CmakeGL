@@ -165,7 +165,6 @@ int main() {
     // input
     // -----
     processInput(window);
-    std::cout<<cameraPos.x<<cameraPos.y<<cameraPos.z<<std::endl;
     view = camera->updateView();
     shader.setMat4("view", view);
 
@@ -182,6 +181,10 @@ int main() {
                                // need to bind it every time, but we'll do so to
                                // keep things a bit more organized
     // glDrawArrays(GL_TRIANGLES, 0, 6);
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::rotate(model, (float)glfwGetTime() ,
+                          glm::vec3(1.0f, 0.3f, 0.5f));
+      shader.setMat4("model", model);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0); // no need to unbind it every time
 
