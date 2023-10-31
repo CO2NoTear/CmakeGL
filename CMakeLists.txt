@@ -28,23 +28,24 @@ endif()
 configure_file(LearnGLConfig.h.in LearnGLConfig.h)
 
 # library
-link_directories("${GLFW_PATH}/lib/")
+# link_directories("${GLFW_PATH}/lib/")
 LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
 
 LINK_LIBRARIES("opengl32.lib")
-# add_subdirectory(glad_dependency)
+add_subdirectory(glad_dependency)
+LINK_LIBRARIES(GLAD)
 # 格式： add_executable(PROJECT_NAME, [Source...])
 add_executable(MyAnswer
 	# "${PROJECT_SOURCE_DIR}/GLTEST/main.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/GLMTest.cpp"
 	"${PROJECT_SOURCE_DIR}/GLTEST/Light.cpp"
-	"${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
+	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/texture.cpp"
 	)
 add_executable(CameraProj
-	"${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
+	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	"${PROJECT_SOURCE_DIR}/GLTEST/CoordsSys.cpp"
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
@@ -52,33 +53,30 @@ add_executable(CameraProj
 add_executable(ExerciseAnswer
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
-	"${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
+	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
 	# "${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
 	"${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
 )
 
 
 # target_link_libraries(LearnGL PUBLIC glfw -framework Cocoa -framework OpenGL -framework IOKit)
-# target_link_libraries(MyAnswer PUBLIC GLAD)
-# target_link_libraries(ExerciseAnswer PUBLIC GLAD)
-# target_link_libraries(CameraProj PUBLIC GLAD)
 
 # include path (Recommended to add at the end of Cmakelist)
 target_include_directories(MyAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	"${GLAD_INCLUDE_PATH}"
+	# "${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
 target_include_directories(CameraProj PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	"${GLAD_INCLUDE_PATH}"
+	# "${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
 target_include_directories(ExerciseAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	"${GLAD_INCLUDE_PATH}"
+	# "${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
