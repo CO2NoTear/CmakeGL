@@ -105,25 +105,25 @@ IfMacros:
 IncludeBlocks:   Regroup
 IncludeCategories:
 - Regex:           '^<glad/glad.h>$'
-    Priority:        0
-    SortPriority:    0
-    CaseSensitive:   false
+  Priority:        -1
+  SortPriority:    -1
+  CaseSensitive:   false
 - Regex:           '^<ext/.*\.h>'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
+  Priority:        2
+  SortPriority:    0
+  CaseSensitive:   false
 - Regex:           '^<.*\.h>'
-    Priority:        1
-    SortPriority:    0
-    CaseSensitive:   false
+  Priority:        1
+  SortPriority:    0
+  CaseSensitive:   false
 - Regex:           '^<.*'
-    Priority:        2
-    SortPriority:    0
-    CaseSensitive:   false
+  Priority:        2
+  SortPriority:    0
+  CaseSensitive:   false
 - Regex:           '.*'
-    Priority:        3
-    SortPriority:    0
-    CaseSensitive:   false
+  Priority:        3
+  SortPriority:    0
+  CaseSensitive:   false
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex: ''
 IndentAccessModifiers: false
@@ -175,7 +175,7 @@ PPIndentWidth:   -1
 QualifierAlignment: Leave
 RawStringFormats:
 - Language:        Cpp
-    Delimiters:
+  Delimiters:
   - cc
   - CC
   - cpp
@@ -183,15 +183,15 @@ RawStringFormats:
   - CPP
   - 'c++'
   - 'C++'
-    CanonicalDelimiter: ''
-    BasedOnStyle:    google
+  CanonicalDelimiter: ''
+  BasedOnStyle:    google
 - Language:        TextProto
-    Delimiters:
+  Delimiters:
   - pb
   - PB
   - proto
   - PROTO
-    EnclosingFunctions:
+  EnclosingFunctions:
   - EqualsProto
   - EquivToProto
   - PARSE_PARTIAL_TEXT_PROTO
@@ -201,8 +201,8 @@ RawStringFormats:
   - ParseTextProtoOrDie
   - ParseTestProto
   - ParsePartialTestProto
-    CanonicalDelimiter: pb
-    BasedOnStyle:    google
+  CanonicalDelimiter: pb
+  BasedOnStyle:    google
 ReferenceAlignment: Pointer
 ReflowComments:  true
 RemoveBracesLLVM: false

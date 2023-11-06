@@ -1,12 +1,16 @@
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
+#include <assimp/Importer.hpp>
 #include <iostream>
+#include <string>
 
 #include "CustomShader.h"
 #include "LearnGLConfig.h"
-#include "glm/gtc/type_ptr.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -38,6 +42,10 @@ const unsigned int SCR_HEIGHT = 600;
 //     "}\n\0";
 
 int main() {
+  Assimp::Importer importer;
+  const aiScene *scene = importer.ReadFile(
+      std::string(PROJECT_SOURCE_DIR) + "/resource/nanosuit.obj",
+      aiProcess_Triangulate | aiProcess_FlipUVs);
   // glfw: initialize and configure
   // ------------------------------
   GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
@@ -69,24 +77,20 @@ int main() {
   //        1, 2, 3   // second Triangle
   //    };
   float vertices[] = {// position			//color
-                      -0.5,-0.5,-0.5, 0.5,-0.5,-0.5, 0.5,0.5,-0.5, -0.5,0.5,-0.5,
- -0.5,-0.5,0.5, 0.5,-0.5,0.5, 0.5,0.5,0.5, -0.5,0.5,0.5,
- 0.0,0.0,0.0, 1.0,0.0,0.0, 1.0,1.0,0.0, 0.0,1.0,0.0,
- 0.0,0.0,1.0, 1.0,0.0,1.0, 1.0,1.0,1.0, 0.0,1.0,1.0};
+                      -0.5, -0.5, -0.5, 0.5,  -0.5, -0.5, 0.5,  0.5, -0.5, -0.5,
+                      0.5,  -0.5, -0.5, -0.5, 0.5,  0.5,  -0.5, 0.5, 0.5,  0.5,
+                      0.5,  -0.5, 0.5,  0.5,  0.0,  0.0,  0.0,  1.0, 0.0,  0.0,
+                      1.0,  1.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0, 1.0,  1.0,
+                      0.0,  1.0,  1.0,  1.0,  1.0,  0.0,  1.0,  1.0};
   unsigned int indices[] = {0, 1, 2, 1, 3, 4};
   unsigned int indices2[] = {
-3, 1, 2,
-1, 0, 3,
-3, 6, 2,
-3, 7, 6,
-7, 0, 4,
-7, 3, 0,
-6, 5, 1,
-2, 1, 6,
-5, 6, 7,
-4, 5, 7,
-4, 0, 1,
-5, 1, 4,
+      3, 1, 2, 1, 0, 3, 3, 6, 2, 3, 7, 6, 7, 0, 4, 7, 3, 0,
+      6, 5, 1, 2, 1, 6, 5, 6, 7, 4, 5, 7, 4, 0, 1, 5, 1, 4,
+  };
+  glm::vec3 model_positions[] = {
+      glm::vec3(0.0f, 0.0f, -9.0f),
+      glm::vec3(3.0f, 0.0f, -9.0f),
+      glm::vec3(-3.0f, 0.0f, -9.0f),
   };
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
@@ -159,15 +163,14 @@ int main() {
   shader.setMat4("view", view);
   shader.setMat4("projection", perspective);
 
-
   glEnable(GL_DEPTH_TEST);
   while (!glfwWindowShouldClose(window)) {
     // input
     // -----
-    processInput(window);
-    view = camera->updateView();
+    framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
+    processInputWithoutMoving(window);
+    // view = camera->updateView();
     shader.setMat4("view", view);
-
 
     // render
     // ------
@@ -180,12 +183,17 @@ int main() {
     glBindVertexArray(VAO);    // seeing as we only have a single VAO there's no
                                // need to bind it every time, but we'll do so to
                                // keep things a bit more organized
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-      glm::mat4 model = glm::mat4(1.0f);
-      model = glm::rotate(model, (float)glfwGetTime() ,
+                               // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glm::mat4 model = glm::mat4(1.0f);
+    for (int i = 0; i < 3; ++i) {
+      model = glm::mat4(1.0f);
+      model = glm::translate(model, model_positions[i]);
+      float angle = 20.0f * i;
+      model = glm::rotate(model, angle + (float)glfwGetTime(),
                           glm::vec3(1.0f, 0.3f, 0.5f));
       shader.setMat4("model", model);
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    }
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved

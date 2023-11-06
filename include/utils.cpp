@@ -1,5 +1,7 @@
 #include <glad/glad.h>
 
+#include "utils.h"
+
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -7,7 +9,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include "utils.h"
 
 glm::mat4 Camera::updateView() {
   view_ = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
@@ -97,6 +98,10 @@ GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
+void processInputWithoutMoving(GLFWwindow *window) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+}
 void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);

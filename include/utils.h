@@ -6,10 +6,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
+#include <vector>
 
+#include "CustomShader.h"
 #include "LearnGLConfig.h"
 
+using namespace std;
+
+void processInputWithoutMoving(GLFWwindow *window);
 GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
                        const unsigned int SCR_HEIGHT);
 
@@ -48,3 +52,35 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 std::string JoinProjectAbsolutePath(std::string);
+struct Vertex {
+  glm::vec3 Position;
+  glm::vec3 Normal;
+  glm::vec2 TexCoords;
+};
+struct Texture {
+  unsigned int id;
+  std::string type;
+};
+class Mesh {
+ public:
+  /*  网格数据  */
+  vector<Vertex> vertices;
+  vector<unsigned int> indices;
+  vector<Texture> textures;
+  /*  函数  */
+  Mesh(vector<Vertex> vertices, vector<unsigned int> indices,
+       vector<Texture> textures) {
+    this->vertices = vertices;
+    this->indices = indices;
+    this->textures = textures;
+
+    setupMesh();
+  }
+  void Draw(Shader shader);
+
+ private:
+  /*  渲染数据  */
+  unsigned int VAO, VBO, EBO;
+  /*  函数  */
+  void setupMesh();
+};

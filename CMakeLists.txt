@@ -30,6 +30,7 @@ configure_file(LearnGLConfig.h.in LearnGLConfig.h)
 # library
 # link_directories("${GLFW_PATH}/lib/")
 LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
+LINK_LIBRARIES("D:/OpenGL/lib/assimpd.lib")
 
 LINK_LIBRARIES("opengl32.lib")
 add_subdirectory(glad_dependency)
@@ -65,18 +66,18 @@ add_executable(ExerciseAnswer
 target_include_directories(MyAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	# "${GLAD_INCLUDE_PATH}"
+	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
 target_include_directories(CameraProj PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	# "${GLAD_INCLUDE_PATH}"
+	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
 target_include_directories(ExerciseAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
-	# "${GLAD_INCLUDE_PATH}"
+	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	)
