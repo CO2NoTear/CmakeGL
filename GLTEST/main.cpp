@@ -11,6 +11,8 @@
 #include "CustomShader.h"
 #include "LearnGLConfig.h"
 #include "glm/ext/matrix_transform.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -42,10 +44,6 @@ const unsigned int SCR_HEIGHT = 600;
 //     "}\n\0";
 
 int main() {
-  Assimp::Importer importer;
-  const aiScene *scene = importer.ReadFile(
-      std::string(PROJECT_SOURCE_DIR) + "/resource/nanosuit.obj",
-      aiProcess_Triangulate | aiProcess_FlipUVs);
   // glfw: initialize and configure
   // ------------------------------
   GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
@@ -62,7 +60,24 @@ int main() {
   std::string fragmentCode =
       PROJECT_SOURCE_DIR + std::string("/GLTEST/shader.fs");
   const char *fragmentShaderSource = fragmentCode.c_str();
-  Shader shader(vertexShaderSource, fragmentShaderSource);
+  Shader box_shader(vertexShaderSource, fragmentShaderSource);
+
+  std::string modelVertexCode =
+      PROJECT_SOURCE_DIR + std::string("/GLTEST/model_shader.vs");
+  const char *modelVertexShaderSource = modelVertexCode.c_str();
+  std::string modelFragmentCode =
+      PROJECT_SOURCE_DIR + std::string("/GLTEST/model_shader.fs");
+  const char *modelFragmentShaderSource = modelFragmentCode.c_str();
+  Shader suit_shader(modelVertexShaderSource, modelFragmentShaderSource);
+  glm::vec3 suit_position = glm::vec3(0.0f, 0.0f, -18.0f);
+  glm::mat4 suit_model_mat = glm::mat4(1.0f);
+  suit_model_mat = glm::translate(suit_model_mat, suit_position);
+  suit_shader.use();
+  suit_shader.setMat4("model", suit_model_mat);
+
+  stbi_set_flip_vertically_on_load(true);
+  Model ourModel(
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/nanosuit.obj").c_str());
 
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
@@ -141,8 +156,8 @@ int main() {
   glm::mat4 view = glm::mat4(1.0f);
   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-  glm::mat4 perspective =
-      glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+  glm::mat4 perspective = glm::perspective(
+      glm::radians(45.0f), 1.0f * SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
   glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
   glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
   // normalized vec3 for camera moving direction (opposite to the direction
@@ -159,9 +174,13 @@ int main() {
   glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
   *camera = Camera(cameraPos, cameraFront, worldUp);
   camera->setSpeed(3.0f);
-  shader.use();
-  shader.setMat4("view", view);
-  shader.setMat4("projection", perspective);
+  box_shader.use();
+  box_shader.setMat4("view", view);
+  box_shader.setMat4("projection", perspective);
+
+  suit_shader.use();
+  suit_shader.setMat4("view", view);
+  suit_shader.setMat4("projection", perspective);
 
   glEnable(GL_DEPTH_TEST);
   while (!glfwWindowShouldClose(window)) {
@@ -170,7 +189,8 @@ int main() {
     framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
     processInputWithoutMoving(window);
     // view = camera->updateView();
-    shader.setMat4("view", view);
+    box_shader.use();
+    box_shader.setMat4("view", view);
 
     // render
     // ------
@@ -179,7 +199,6 @@ int main() {
 
     // draw our first triangle
     // glUseProgram(shaderProgram);
-    shader.use();
     glBindVertexArray(VAO);    // seeing as we only have a single VAO there's no
                                // need to bind it every time, but we'll do so to
                                // keep things a bit more organized
@@ -191,9 +210,13 @@ int main() {
       float angle = 20.0f * i;
       model = glm::rotate(model, angle + (float)glfwGetTime(),
                           glm::vec3(1.0f, 0.3f, 0.5f));
-      shader.setMat4("model", model);
+      box_shader.setMat4("model", model);
       glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
+    suit_shader.use();
+    suit_shader.setMat4("view", view);
+    ourModel.Draw(suit_shader);
+
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
