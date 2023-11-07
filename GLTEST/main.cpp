@@ -156,8 +156,8 @@ int main() {
   glm::mat4 view = glm::mat4(1.0f);
   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-  glm::mat4 perspective = glm::perspective(
-      glm::radians(45.0f), 1.0f * SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+  // glm::mat4 perspective = glm::perspective(
+  //     glm::radians(45.0f), 1.0f * SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
   glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
   glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
   // normalized vec3 for camera moving direction (opposite to the direction
@@ -176,21 +176,22 @@ int main() {
   camera->setSpeed(3.0f);
   box_shader.use();
   box_shader.setMat4("view", view);
-  box_shader.setMat4("projection", perspective);
+  box_shader.setMat4("projection", camera->perspective);
 
   suit_shader.use();
   suit_shader.setMat4("view", view);
-  suit_shader.setMat4("projection", perspective);
+  suit_shader.setMat4("projection", camera->perspective);
 
   glEnable(GL_DEPTH_TEST);
   while (!glfwWindowShouldClose(window)) {
     // input
     // -----
     framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
-    processInputWithoutMoving(window);
-    // view = camera->updateView();
+    processInput(window);
+    view = camera->updateView();
     box_shader.use();
     box_shader.setMat4("view", view);
+    box_shader.setMat4("projection", camera->perspective);
 
     // render
     // ------
@@ -215,6 +216,7 @@ int main() {
     }
     suit_shader.use();
     suit_shader.setMat4("view", view);
+    suit_shader.setMat4("projection", camera->perspective);
     ourModel.Draw(suit_shader);
 
     // glBindVertexArray(0); // no need to unbind it every time

@@ -10,8 +10,9 @@
 #include <iostream>
 
 #include "CustomShader.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/quaternion_trigonometric.hpp"
 #include "stb_image.h"
-
 
 glm::mat4 Camera::updateView() {
   view_ = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
@@ -108,6 +109,12 @@ void processInputWithoutMoving(GLFWwindow *window) {
 void processInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+  if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+    camera->perspective =
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+  if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    camera->perspective =
+        glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
   camera->move(window);
 }
 // void processInput(GLFWwindow *window, Camera *camera) {

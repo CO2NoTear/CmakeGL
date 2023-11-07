@@ -13,6 +13,7 @@
 
 #include "CustomShader.h"
 #include "LearnGLConfig.h"
+#include "glm/ext/matrix_clip_space.hpp"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
 
 class Camera {
  public:
+  glm::mat4 perspective =
+      glm::perspective(glm::radians(45.0f), 1.0f * 800 / 600, 0.1f, 100.0f);
   glm::mat4 updateView();
   void setSpeed(const float val);
   void setFov(const float val);
