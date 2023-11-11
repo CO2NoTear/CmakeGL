@@ -12,15 +12,28 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set(GLFW_INCLUDE_PATH "${GLFW_PATH}/include")
 	set(GLAD_PATH "D:/OpenGL")
 	set(GLAD_INCLUDE_PATH "${GLAD_PATH}/include")
+	set(ASSIMP_PATH "D:/OpenGL")
+	set(ASSIMP_INCLUDE_PATH "${ASSIMP_PATH}/include")
 	find_package(OpenGL REQUIRED)
-elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
+	LINK_LIBRARIES("D:/OpenGL/lib/assimpd.lib")
+
+	LINK_LIBRARIES("opengl32.lib")
+
+elseif (APPLE)
     # macOS平台的配置
-	set(GLFW_PATH "/opt/homebrew/Cellar/glfw/3.3.8/")
+	set(GLFW_PATH "/opt/homebrew/Cellar/glfw/3.3.8")
 	set(GLFW_INCLUDE_PATH "${GLFW_PATH}/include")
-	set(GLAD_PATH "/Users/co2notear/Dependencies/glad/")
+	set(GLAD_PATH "/Users/co2notear/Dependencies/glad")
 	set(GLAD_INCLUDE_PATH "${GLAD_PATH}/include")
+	set(ASSIMP_PATH "/Users/co2notear/Dependencies/assimp")
+	set(ASSIMP_INCLUDE_PATH "${ASSIMP_PATH}/include")
 	find_package(glfw3 3.3 REQUIRED)
 	find_package(OpenGL REQUIRED)
+	LINK_LIBRARIES("${GLFW_PATH}/lib/libglfw.dylib")
+	link_libraries("-framework Cocoa -framework OpenGL -framework IOKit")
+	LINK_LIBRARIES("${ASSIMP_PATH}/bin/libassimp.5.3.0.dylib")
+
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Linux平台的配置
 endif()
@@ -29,10 +42,6 @@ configure_file(LearnGLConfig.h.in LearnGLConfig.h)
 
 # library
 # link_directories("${GLFW_PATH}/lib/")
-LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
-LINK_LIBRARIES("D:/OpenGL/lib/assimpd.lib")
-
-LINK_LIBRARIES("opengl32.lib")
 add_subdirectory(glad_dependency)
 LINK_LIBRARIES(GLAD)
 # 格式： add_executable(PROJECT_NAME, [Source...])
@@ -58,26 +67,30 @@ add_executable(ExerciseAnswer
 	# "${PROJECT_SOURCE_DIR}/Exercise Answers/TextureTransform.cpp"
 	"${PROJECT_SOURCE_DIR}/Exercise Answers/DrawALine.cpp"
 )
-
-
-# target_link_libraries(LearnGL PUBLIC glfw -framework Cocoa -framework OpenGL -framework IOKit)
-
+if(APPLE)
+	# target_link_libraries(MyAnswer PUBLIC "-framework Cocoa -framework OpenGL -framework IOKit")
+	# target_link_libraries(ExerciseAnswer PUBLIC "-framework Cocoa -framework OpenGL -framework IOKit")
+	# target_link_libraries(CameraProj PUBLIC "-framework Cocoa -framework OpenGL -framework IOKit")
+endif()
 # include path (Recommended to add at the end of Cmakelist)
 target_include_directories(MyAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
+	"${ASSIMP_INCLUDE_PATH}"
 	)
 target_include_directories(CameraProj PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
+	"${ASSIMP_INCLUDE_PATH}"
 	)
 target_include_directories(ExerciseAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
+	"${ASSIMP_INCLUDE_PATH}"
 	)

@@ -11,7 +11,6 @@
 #include "CustomShader.h"
 #include "LearnGLConfig.h"
 #include "glm/ext/matrix_transform.hpp"
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "utils.h"
 

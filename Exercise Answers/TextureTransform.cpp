@@ -5,14 +5,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <iostream>
-
 #include "stb_image.h"
+#include "util.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
