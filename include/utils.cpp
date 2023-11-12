@@ -11,7 +11,6 @@
 
 #include "CustomShader.h"
 #include "glm/ext/matrix_clip_space.hpp"
-#include "glm/ext/quaternion_trigonometric.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 

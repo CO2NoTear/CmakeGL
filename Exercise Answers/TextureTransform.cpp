@@ -10,7 +10,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
 #include "stb_image.h"
-#include "util.h"
+#include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);

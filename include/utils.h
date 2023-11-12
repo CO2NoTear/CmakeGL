@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "CustomShader.h"
-#include "LearnGLConfig.h"
+#include "build/LearnGLConfig.h"
 #include "glm/ext/matrix_clip_space.hpp"
 
 using namespace std;

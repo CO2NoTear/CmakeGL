@@ -9,7 +9,7 @@
 #include <string>
 
 #include "CustomShader.h"
-#include "LearnGLConfig.h"
+#include "build/LearnGLConfig.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "stb_image.h"
 #include "utils.h"
