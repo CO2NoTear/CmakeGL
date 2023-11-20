@@ -2,13 +2,75 @@
 
 #include <GLFW/glfw3.h>
 
+#include <cmath>
+#include <cstddef>
+#include <glm/glm.hpp>
+#include <iostream>
+#include <vector>
+
 #include "CustomShader.h"
-#include "LearnGLConfig.h"
+#include "build/LearnGLConfig.h"
 #include "utils.h"
 
+void processMouseInput(GLFWwindow *window);
+long long comb[20][20];
+typedef vector<glm::vec3> Vertices;
+Vertices control_vertices = {
+    glm::vec3(0.1f, 0.1f, 0.0f),
+};
+
+long long get_comb(int m, int n) {
+  if (comb[m][n]) return comb[m][n];
+  if (comb[n - m][n]) return comb[m][n] = comb[n - m][n];
+  long long frac = 1;
+  for (long long i = 1; i <= m; ++i) {
+    frac *= i + m;
+    frac /= i;
+  }
+  return comb[m][n] = frac;
+}
+
+float *bezier(Vertices control_vertices, size_t precision) {
+  float **vertices = new float *[precision];
+  for (int i = 0; i < precision; ++i) {
+    vertices[i] = new float[3];
+    vertices[i][0] = 0;
+    vertices[i][1] = 0;
+    vertices[i][2] = 0;
+  }
+
+  unsigned int n = control_vertices.size();
+
+  float u = 0;
+  for (size_t it = 0; it < precision; ++it) {
+    for (size_t m = 0; m < n; ++m) {
+      float B = get_comb(m, n - 1) * pow(u, m) * pow((1 - u), n - 1 - m);
+      vertices[it][0] += B * control_vertices[m].x;
+      vertices[it][1] += B * control_vertices[m].y;
+      vertices[it][2] += B * control_vertices[m].z;
+    }
+    u += 1.0 / precision;
+  }
+
+  float *result = new float[precision * 6];
+  for (size_t i = 0; i < precision; ++i) {
+    // position
+    result[i * 6] = vertices[i][0];
+    result[i * 6 + 1] = vertices[i][1];
+    result[i * 6 + 2] = vertices[i][2];
+    delete[] vertices[i];
+    // color: RED
+    result[i * 6 + 3] = 1.0f;
+    result[i * 6 + 4] = 0.0f;
+    result[i * 6 + 5] = 0.0f;
+    // delete[] vertices[i];
+  }
+  // delete[] vertices;
+  return result;
+}
 float *bres(unsigned int x0, unsigned int y0, unsigned int xe,
             unsigned int ye) {
-  int xs, ys;    // starting point
+  int xs, ys;  // starting point
   unsigned int delta_x, delta_y;
   if (x0 < xe) {
     xs = x0;
@@ -51,47 +113,91 @@ float *bres(unsigned int x0, unsigned int y0, unsigned int xe,
 }
 
 int main() {
+  // std::cout << "C[2][4] is " << get_comb(2, 4) << std::endl;
   GLFWwindow *window = initWindow(800, 600);
-  unsigned int VBO, VAO;
-  glad_glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  // glfwSetCursorPosCallback(window, mouse_callback);
+  unsigned int VBO[2], VAO[2];
+  glad_glGenVertexArrays(2, VAO);
+  glGenBuffers(2, VBO);
   // float vertices[] = {-0.5f, -0.5f, 0.0f, 0.8f, 0.0f,  0.0f,  0.5f, 0.5f,
   //                     0.0f,  0.0f,  0.8f, 0.0f, -0.3f, -0.5f, 0.0f, 0.8f,
   //                     0.8f,  0.0f,  0.3f, 0.5f, 0.0f,  0.8f,  0.8f, 0.8f};
 
-  float *vertices = bres(50, 275, 650, 325);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * (650 - 50), vertices,
-               GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-  glEnableVertexAttribArray(0);
-  // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-  //                       (void *)(3 * sizeof(float)));
-  // glEnableVertexAttribArray(1);
-
+  // float *vertices = bres(50, 275, 650, 325);
   std::string shaderPath = PROJECT_SOURCE_DIR;
   Shader shaderProgram(
       (shaderPath + std::string("/Exercise Answers/") + "line.vs").c_str(),
       (shaderPath + std::string("/GLTEST/") + "shader.fs").c_str());
 
-  glm::mat4 ortho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -0.1f, 100.0f);
+  glm::mat4 ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -0.1f, 1.0f);
   shaderProgram.use();
   shaderProgram.setMat4("projection", ortho);
   while (!glfwWindowShouldClose(window)) {
-    processInput(window);
+    processMouseInput(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     glClearColor(0.2f, 0.3f, 0.2f, 0.0f);
+    glPointSize(10.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindVertexArray(VAO);
+    unsigned int precision = 5000;
+    float *control_points = new float[6 * control_vertices.size()];
+    for (size_t i = 0; i < control_vertices.size(); ++i) {
+      control_points[i * 6 + 0] = control_vertices[i].x;
+      control_points[i * 6 + 1] = control_vertices[i].y;
+      control_points[i * 6 + 2] = control_vertices[i].z;
+      // BLUE
+      control_points[i * 6 + 3] = 0.0f;
+      control_points[i * 6 + 4] = 0.0f;
+      control_points[i * 6 + 5] = 1.0f;
+    }
+    float *vertices = bezier(control_vertices, precision);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
+    glBindVertexArray(VAO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * precision, vertices,
+                 GL_STATIC_DRAW);
 
-    glDrawArrays(GL_POINTS, 0, 600);
-    std::cout << glad_glGetError() << std::endl;
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+    glBindVertexArray(VAO[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * control_vertices.size(),
+                 control_points, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(VAO[0]);
+    glDrawArrays(GL_POINTS, 0, precision);
+
+    glBindVertexArray(VAO[1]);
+    glDrawArrays(GL_POINTS, 0, control_vertices.size());
+    // std::cout << glad_glGetError() << std::endl;
 
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
   return 0;
+}
+void processMouseInput(GLFWwindow *window) {
+  static float lastTime = 0.0f;
+  float currentTime = glfwGetTime();
+  float deltaTime = currentTime - lastTime;
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+  if (deltaTime > 0.5f && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1)) {
+    lastTime = currentTime;
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    control_vertices.push_back(glm::vec3(xpos / 800, (1 - ypos / 600), 0.0f));
+  }
 }

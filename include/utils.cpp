@@ -1,7 +1,5 @@
 #include <glad/glad.h>
 
-#include "utils.h"
-
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -11,6 +9,8 @@
 
 #include "CustomShader.h"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "utils.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -58,13 +58,47 @@ void Camera::mouse(float xoffset, float yoffset) {
   cameraFront_ = glm::normalize(front);
 }
 Camera::Camera(glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp)
-  : cameraPos_(cameraPos), cameraFront_(cameraFront), cameraUp_(cameraUp) {
+    : cameraPos_(cameraPos), cameraFront_(cameraFront), cameraUp_(cameraUp) {
   cameraSpeed_ = 50.0f;
 }
 Camera::Camera() {}
 
 Camera *camera = new Camera();
 
+GLFWwindow *initCameraWindow(const unsigned int SCR_WIDTH,
+                             const unsigned int SCR_HEIGHT) {
+  glfwInit();
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+  // glfw window creation
+  // --------------------
+  GLFWwindow *window =
+      glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  if (window == NULL) {
+    std::cout << "Failed to create GLFW window" << std::endl;
+    glfwTerminate();
+    return NULL;
+  }
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwMakeContextCurrent(window);
+  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glfwSetCursorPosCallback(window, camera_mouse_callback);
+  glfwSetScrollCallback(window, scroll_callback);
+
+  // glad: load all OpenGL function pointers
+  // ---------------------------------------
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    return NULL;
+  }
+  return window;
+}
 GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
                        const unsigned int SCR_HEIGHT) {
   glfwInit();
@@ -87,8 +121,8 @@ GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  glfwSetCursorPosCallback(window, mouse_callback);
-  glfwSetScrollCallback(window, scroll_callback);
+  // glfwSetCursorPosCallback(window, mouse_callback);
+  // glfwSetScrollCallback(window, scroll_callback);
 
   // glad: load all OpenGL function pointers
   // ---------------------------------------
@@ -107,6 +141,17 @@ void processInputWithoutMoving(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
 }
 void processInput(GLFWwindow *window) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+  if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+    camera->perspective =
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+  if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+    camera->perspective =
+        glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+  // camera->move(window);
+}
+void processCameraInput(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
@@ -137,7 +182,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
   if (camera->getFov() <= 1.0f) camera->setFov(1.0f);
   if (camera->getFov() >= 45.0f) camera->setFov(45.0f);
 }
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+void camera_mouse_callback(GLFWwindow *window, double xpos, double ypos) {
   static float lastX = 400, lastY = 300;
   // std::cout << "x = " << xpos << "; y = " << ypos << std::endl;
   float xoffset = xpos - lastX;

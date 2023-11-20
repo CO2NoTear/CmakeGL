@@ -6,5 +6,5 @@ uniform mat4 projection;
 void main()
 {
    gl_Position = projection * vec4(aPos, 1.0f);
-   vertexColor = vec4(0.8f, 0.0f, 0.0f, 1.0f);
+   vertexColor = vec4(aColor, 1.0f);
 }

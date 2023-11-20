@@ -20,6 +20,8 @@ using namespace std;
 void processInputWithoutMoving(GLFWwindow *window);
 GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
                        const unsigned int SCR_HEIGHT);
+GLFWwindow *initCameraWindow(const unsigned int SCR_WIDTH,
+                             const unsigned int SCR_HEIGHT);
 
 class Camera {
  public:
@@ -53,8 +55,11 @@ class Camera {
 };
 extern Camera *camera;
 void processInput(GLFWwindow *window);
+void processInputWithoutMoving(GLFWwindow *window);
 void processInput(GLFWwindow *window, Camera *camera);
+void processCameraInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void camera_mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 std::string JoinProjectAbsolutePath(std::string);
@@ -66,7 +71,7 @@ struct Vertex {
 struct Texture {
   unsigned int id;
   string type;
-  string path;    // 我们储存纹理的路径用于与其它纹理进行比较
+  string path;  // 我们储存纹理的路径用于与其它纹理进行比较
 };
 class Mesh {
  public:
@@ -91,7 +96,7 @@ class Mesh {
     unsigned int heightNr = 1;
     for (unsigned int i = 0; i < textures.size(); i++) {
       glActiveTexture(GL_TEXTURE0 +
-                      i);    // active proper texture unit before binding
+                      i);  // active proper texture unit before binding
       // retrieve texture number (the N in diffuse_textureN)
       string number;
       string name = textures[i].type;
@@ -99,13 +104,11 @@ class Mesh {
         number = std::to_string(diffuseNr++);
       else if (name == "texture_specular")
         number =
-            std::to_string(specularNr++);    // transfer unsigned int to string
+            std::to_string(specularNr++);  // transfer unsigned int to string
       else if (name == "texture_normal")
-        number =
-            std::to_string(normalNr++);    // transfer unsigned int to string
+        number = std::to_string(normalNr++);  // transfer unsigned int to string
       else if (name == "texture_height")
-        number =
-            std::to_string(heightNr++);    // transfer unsigned int to string
+        number = std::to_string(heightNr++);  // transfer unsigned int to string
 
       // now set the sampler to the correct texture unit
       glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
@@ -216,7 +219,7 @@ class Model {
       vector.z = mesh->mNormals[i].z;
       vertex.Normal = vector;
 
-      if (mesh->mTextureCoords[0])    // 网格是否有纹理坐标？
+      if (mesh->mTextureCoords[0])  // 网格是否有纹理坐标？
       {
         glm::vec2 vec;
         vec.x = mesh->mTextureCoords[0][i].x;
@@ -263,13 +266,13 @@ class Model {
           break;
         }
       }
-      if (!skip) {    // 如果纹理还没有被加载，则加载它
+      if (!skip) {  // 如果纹理还没有被加载，则加载它
         Texture texture;
         texture.id = TextureFromFile(str.C_Str(), directory);
         texture.type = typeName;
         texture.path = str.C_Str();
         textures.push_back(texture);
-        textures_loaded.push_back(texture);    // 添加到已加载的纹理中
+        textures_loaded.push_back(texture);  // 添加到已加载的纹理中
       }
     }
     return textures;

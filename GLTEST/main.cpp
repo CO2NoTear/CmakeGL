@@ -45,7 +45,7 @@ const unsigned int SCR_HEIGHT = 600;
 int main() {
   // glfw: initialize and configure
   // ------------------------------
-  GLFWwindow *window = initWindow(SCR_WIDTH, SCR_HEIGHT);
+  GLFWwindow *window = initCameraWindow(SCR_WIDTH, SCR_HEIGHT);
   if (!window) {
     std::cerr << "Unable to InitWindow at " << SCR_HEIGHT << "x" << SCR_WIDTH
               << std::endl;
@@ -186,7 +186,7 @@ int main() {
     // input
     // -----
     framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
-    processInput(window);
+    processCameraInput(window);
     view = camera->updateView();
     box_shader.use();
     box_shader.setMat4("view", view);
@@ -199,10 +199,10 @@ int main() {
 
     // draw our first triangle
     // glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);    // seeing as we only have a single VAO there's no
-                               // need to bind it every time, but we'll do so to
-                               // keep things a bit more organized
-                               // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no
+                             // need to bind it every time, but we'll do so to
+                             // keep things a bit more organized
+                             // glDrawArrays(GL_TRIANGLES, 0, 6);
     glm::mat4 model = glm::mat4(1.0f);
     for (int i = 0; i < 3; ++i) {
       model = glm::mat4(1.0f);
