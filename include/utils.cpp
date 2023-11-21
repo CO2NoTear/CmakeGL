@@ -156,7 +156,7 @@ void processCameraInput(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
   if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
     camera->perspective =
-        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+        glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 50.0f);
   if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
     camera->perspective =
         glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);

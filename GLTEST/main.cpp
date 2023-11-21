@@ -213,7 +213,32 @@ int main() {
       box_shader.setMat4("model", model);
       glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+      suit_model_mat =
+          glm::rotate(suit_model_mat, 0.001f, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+      suit_model_mat =
+          glm::rotate(suit_model_mat, -0.001f, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+      suit_model_mat =
+          glm::rotate(suit_model_mat, 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+      suit_model_mat =
+          glm::rotate(suit_model_mat, -0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
+      suit_model_mat =
+          glm::scale(suit_model_mat, glm::vec3(1.001f, 1.001f, 1.001f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+      suit_model_mat = glm::scale(
+          suit_model_mat, glm::vec3(1 / 1.001f, 1 / 1.001f, 1 / 1.001f));
+    }
     suit_shader.use();
+    suit_shader.setMat4("model", suit_model_mat);
     suit_shader.setMat4("view", view);
     suit_shader.setMat4("projection", camera->perspective);
     ourModel.Draw(suit_shader);

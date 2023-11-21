@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <random>
 #include <vector>
 
 #include "CustomShader.h"
@@ -18,6 +19,12 @@ typedef vector<glm::vec3> Vertices;
 Vertices control_vertices = {
     glm::vec3(0.1f, 0.1f, 0.0f),
 };
+Vertices control_vertices_auto = {
+    glm::vec3(0.1f, 0.1f, 0.0f),
+};
+static default_random_engine eng;
+static uniform_real_distribution<float> dis(-0.0001, 0.0001);
+static std::vector<uniform_real_distribution<float>> randfloat;
 
 long long get_comb(int m, int n) {
   if (comb[m][n]) return comb[m][n];
@@ -30,7 +37,7 @@ long long get_comb(int m, int n) {
   return comb[m][n] = frac;
 }
 
-float *bezier(Vertices control_vertices, size_t precision) {
+float *bezier(Vertices control_vertices, size_t precision, glm::vec3 color) {
   float **vertices = new float *[precision];
   for (int i = 0; i < precision; ++i) {
     vertices[i] = new float[3];
@@ -60,9 +67,9 @@ float *bezier(Vertices control_vertices, size_t precision) {
     result[i * 6 + 2] = vertices[i][2];
     delete[] vertices[i];
     // color: RED
-    result[i * 6 + 3] = 1.0f;
-    result[i * 6 + 4] = 0.0f;
-    result[i * 6 + 5] = 0.0f;
+    result[i * 6 + 3] = color.x;
+    result[i * 6 + 4] = color.y;
+    result[i * 6 + 5] = color.z;
     // delete[] vertices[i];
   }
   // delete[] vertices;
@@ -116,9 +123,9 @@ int main() {
   // std::cout << "C[2][4] is " << get_comb(2, 4) << std::endl;
   GLFWwindow *window = initWindow(800, 600);
   // glfwSetCursorPosCallback(window, mouse_callback);
-  unsigned int VBO[2], VAO[2];
-  glad_glGenVertexArrays(2, VAO);
-  glGenBuffers(2, VBO);
+  unsigned int VBO[4], VAO[4];
+  glad_glGenVertexArrays(4, VAO);
+  glGenBuffers(4, VBO);
   // float vertices[] = {-0.5f, -0.5f, 0.0f, 0.8f, 0.0f,  0.0f,  0.5f, 0.5f,
   //                     0.0f,  0.0f,  0.8f, 0.0f, -0.3f, -0.5f, 0.0f, 0.8f,
   //                     0.8f,  0.0f,  0.3f, 0.5f, 0.0f,  0.8f,  0.8f, 0.8f};
@@ -132,6 +139,9 @@ int main() {
   glm::mat4 ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -0.1f, 1.0f);
   shaderProgram.use();
   shaderProgram.setMat4("projection", ortho);
+  float rand_range = dis(eng);
+  randfloat.push_back(uniform_real_distribution<float>(-0.002 + rand_range,
+                                                       0.002 + rand_range));
   while (!glfwWindowShouldClose(window)) {
     processMouseInput(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -141,17 +151,33 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     unsigned int precision = 5000;
-    float *control_points = new float[6 * control_vertices.size()];
+    float *control_points_manual = new float[6 * control_vertices.size()];
     for (size_t i = 0; i < control_vertices.size(); ++i) {
-      control_points[i * 6 + 0] = control_vertices[i].x;
-      control_points[i * 6 + 1] = control_vertices[i].y;
-      control_points[i * 6 + 2] = control_vertices[i].z;
+      control_points_manual[i * 6 + 0] = control_vertices[i].x;
+      control_points_manual[i * 6 + 1] = control_vertices[i].y;
+      control_points_manual[i * 6 + 2] = control_vertices[i].z;
       // BLUE
-      control_points[i * 6 + 3] = 0.0f;
-      control_points[i * 6 + 4] = 0.0f;
-      control_points[i * 6 + 5] = 1.0f;
+      control_points_manual[i * 6 + 3] = 0.0f;
+      control_points_manual[i * 6 + 4] = 0.0f;
+      control_points_manual[i * 6 + 5] = 1.0f;
     }
-    float *vertices = bezier(control_vertices, precision);
+    float *control_points_auto = new float[6 * control_vertices.size()];
+    for (size_t i = 0; i < control_vertices_auto.size(); ++i) {
+      control_vertices_auto[i].x += randfloat[i](eng);
+      control_vertices_auto[i].y += randfloat[i](eng);
+      control_vertices_auto[i].z += randfloat[i](eng);
+      control_points_auto[i * 6 + 0] = control_vertices_auto[i].x;
+      control_points_auto[i * 6 + 1] = control_vertices_auto[i].y;
+      control_points_auto[i * 6 + 2] = control_vertices_auto[i].z;
+      // GREEN
+      control_points_auto[i * 6 + 3] = 0.0f;
+      control_points_auto[i * 6 + 4] = 1.0f;
+      control_points_auto[i * 6 + 5] = 0.0f;
+    }
+
+    // MANUAL
+    float *vertices =
+        bezier(control_vertices, precision, glm::vec3(1.0f, 0.0f, 0.0f));
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBindVertexArray(VAO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * precision, vertices,
@@ -167,7 +193,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
     glBindVertexArray(VAO[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * control_vertices.size(),
-                 control_points, GL_STATIC_DRAW);
+                 control_points_manual, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                           (void *)0);
@@ -182,6 +208,39 @@ int main() {
     glBindVertexArray(VAO[1]);
     glDrawArrays(GL_POINTS, 0, control_vertices.size());
     // std::cout << glad_glGetError() << std::endl;
+    // AUTO
+    float *vertices_auto =
+        bezier(control_vertices_auto, precision, glm::vec3(0.0f, 0.5f, 0.5f));
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
+    glBindVertexArray(VAO[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * precision, vertices_auto,
+                 GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
+    glBindVertexArray(VAO[3]);
+    glBufferData(GL_ARRAY_BUFFER,
+                 sizeof(float) * 6 * control_vertices_auto.size(),
+                 control_points_auto, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(VAO[2]);
+    glDrawArrays(GL_POINTS, 0, precision);
+
+    glBindVertexArray(VAO[3]);
+    glDrawArrays(GL_POINTS, 0, control_vertices_auto.size());
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -199,5 +258,10 @@ void processMouseInput(GLFWwindow *window) {
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     control_vertices.push_back(glm::vec3(xpos / 800, (1 - ypos / 600), 0.0f));
+    control_vertices_auto.push_back(
+        glm::vec3(xpos / 800, (1 - ypos / 600), 0.0f));
+    float rand_range = dis(eng);
+    randfloat.push_back(uniform_real_distribution<float>(-0.002 + rand_range,
+                                                         0.002 + rand_range));
   }
 }
