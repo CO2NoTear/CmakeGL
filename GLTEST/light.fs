@@ -23,6 +23,7 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
+uniform int blinn;
 
 void main()
 {
@@ -37,9 +38,19 @@ void main()
     // specular lighting
     vec3 viewDir = normalize(viewPos - FragPos);
     // utility function: reflect(dirFromLightToFrag, normal)
-    vec3 reflectDir = reflect(-lightDir, norm);
+    // vec3 reflectDir = reflect(-lightDir, norm);
     // 32 is how specular is the surface 
-    float spec = pow(max(0.0, dot(viewDir, reflectDir)), material.shininess);
+    float spec;
+    if(blinn)
+    {
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        spec = pow(max(dot(norm, halfwayDir), 0.0), 16.0);
+    }
+    else
+    {
+        vec3 reflectDir = reflect(-lightDir, norm);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
+    }
     // specular lighting is basically considering
     // how much source light can be seen by the viewer
     vec3 specular = light.specular * (material.specular * spec);
