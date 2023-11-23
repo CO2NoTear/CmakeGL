@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "CustomShader.h"
-#include "LearnGLConfig.h"
 #include "utils.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);

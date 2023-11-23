@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include "LearnGLConfig.h"
+#include "build/LearnGLConfig.h"
 
 GLFWwindow *initWindow(const unsigned int SCR_WIDTH,
                        const unsigned int SCR_HEIGHT);

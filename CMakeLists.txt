@@ -13,6 +13,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 	set(GLAD_PATH "D:/OpenGL")
 	set(GLAD_INCLUDE_PATH "${GLAD_PATH}/include")
 	find_package(OpenGL REQUIRED)
+	LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
+
+	LINK_LIBRARIES("opengl32.lib")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     # macOS平台的配置
 	set(GLFW_PATH "/opt/homebrew/Cellar/glfw/3.3.8/")
@@ -21,6 +24,7 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(GLAD_INCLUDE_PATH "${GLAD_PATH}/include")
 	find_package(glfw3 3.3 REQUIRED)
 	find_package(OpenGL REQUIRED)
+	link_libraries(glfw)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # Linux平台的配置
 endif()
@@ -29,9 +33,6 @@ configure_file(LearnGLConfig.h.in LearnGLConfig.h)
 
 # library
 # link_directories("${GLFW_PATH}/lib/")
-LINK_LIBRARIES("D:/OpenGL/lib/glfw3.lib")
-
-LINK_LIBRARIES("opengl32.lib")
 add_subdirectory(glad_dependency)
 LINK_LIBRARIES(GLAD)
 # 格式： add_executable(PROJECT_NAME, [Source...])
@@ -59,7 +60,6 @@ add_executable(ExerciseAnswer
 )
 
 
-# target_link_libraries(LearnGL PUBLIC glfw -framework Cocoa -framework OpenGL -framework IOKit)
 
 # include path (Recommended to add at the end of Cmakelist)
 target_include_directories(MyAnswer PUBLIC
@@ -76,6 +76,7 @@ target_include_directories(CameraProj PUBLIC
 	)
 target_include_directories(ExerciseAnswer PUBLIC
 	"${PROJECT_SOURCE_DIR}"
+	"${PROJECT_BINARY_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	# "${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"

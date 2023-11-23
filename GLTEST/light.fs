@@ -23,7 +23,7 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
-uniform int blinn;
+uniform bool blinn;
 
 void main()
 {

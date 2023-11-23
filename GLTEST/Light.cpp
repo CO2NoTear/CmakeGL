@@ -149,7 +149,7 @@ int main() {
   // lightShader.setFloat("material.shininess", 32.0f);
 
   // emerald
-    lightShader.setInt("blinn", 1);
+  lightShader.setInt("blinn", 1);
   lightShader.setVec3("material.ambient", 0.0215, 0.1745, 0.0215);
   lightShader.setVec3("material.diffuse", 0.07568, 0.61424, 0.07568);
   lightShader.setVec3("material.specular", 0.633, 0.727811, 0.633);
@@ -210,11 +210,11 @@ int main() {
     glm::vec3 ambientColor =
         lampColor * glm::vec3(0.2f);    // lower the influence on ambient
 
-    if(glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS){
-        lightShader.setInt("blinn", 1);
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+      lightShader.setBool("blinn", 1);
     }
-    if(glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS){
-        lightShader.setInt("blinn", 0);
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+      lightShader.setBool("blinn", 0);
     }
     lightShader.setVec3("light.ambient", ambientColor);
     lightShader.setVec3("light.diffuse", diffuseColor);
