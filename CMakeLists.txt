@@ -45,7 +45,7 @@ configure_file(LearnGLConfig.h.in LearnGLConfig.h)
 add_subdirectory(glad_dependency)
 LINK_LIBRARIES(GLAD)
 # 格式： add_executable(PROJECT_NAME, [Source...])
-add_executable(MyAnswer
+add_executable(Scene
 	"${PROJECT_SOURCE_DIR}/GLTEST/main.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/GLMTest.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/Light.cpp"
@@ -54,13 +54,13 @@ add_executable(MyAnswer
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
 	# "${PROJECT_SOURCE_DIR}/GLTEST/texture.cpp"
 	)
-add_executable(CameraProj
-	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
-	"${PROJECT_SOURCE_DIR}/GLTEST/CoordsSys.cpp"
-	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
-	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
-	)
-add_executable(ExerciseAnswer
+# add_executable(CameraProj
+# 	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
+# 	"${PROJECT_SOURCE_DIR}/GLTEST/CoordsSys.cpp"
+# 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
+# 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
+# 	)
+add_executable(Bezier
 	"${PROJECT_SOURCE_DIR}/include/CustomShader.cpp"
 	"${PROJECT_SOURCE_DIR}/include/utils.cpp"
 	# "${PROJECT_SOURCE_DIR}/glad_dependency/glad.c"
@@ -73,21 +73,21 @@ if(APPLE)
 	# target_link_libraries(CameraProj PUBLIC "-framework Cocoa -framework OpenGL -framework IOKit")
 endif()
 # include path (Recommended to add at the end of Cmakelist)
-target_include_directories(MyAnswer PUBLIC
+target_include_directories(Scene PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	"${GLAD_INCLUDE_PATH}"
 	"${GLFW_INCLUDE_PATH}"
 	"${ASSIMP_INCLUDE_PATH}"
 	)
-target_include_directories(CameraProj PUBLIC
-	"${PROJECT_SOURCE_DIR}"
-	"${PROJECT_SOURCE_DIR}/include/"
-	"${GLAD_INCLUDE_PATH}"
-	"${GLFW_INCLUDE_PATH}"
-	"${ASSIMP_INCLUDE_PATH}"
-	)
-target_include_directories(ExerciseAnswer PUBLIC
+# target_include_directories(CameraProj PUBLIC
+# 	"${PROJECT_SOURCE_DIR}"
+# 	"${PROJECT_SOURCE_DIR}/include/"
+# 	"${GLAD_INCLUDE_PATH}"
+# 	"${GLFW_INCLUDE_PATH}"
+# 	"${ASSIMP_INCLUDE_PATH}"
+# 	)
+target_include_directories(Bezier PUBLIC
 	"${PROJECT_SOURCE_DIR}"
 	"${PROJECT_SOURCE_DIR}/include/"
 	"${GLAD_INCLUDE_PATH}"
