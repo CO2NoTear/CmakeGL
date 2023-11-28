@@ -74,6 +74,14 @@ int main() {
   suit_shader.use();
   suit_shader.setMat4("model", suit_model_mat);
 
+  std::string skyboxVertexCode =
+      PROJECT_SOURCE_DIR + std::string("/GLTEST/skybox.vs");
+  const char *skyboxVertexShaderSource = skyboxVertexCode.c_str();
+  std::string skyboxFragmentCode =
+      PROJECT_SOURCE_DIR + std::string("/GLTEST/skybox.fs");
+  const char *skyboxFragmentShaderSource = skyboxFragmentCode.c_str();
+  Shader skybox_shader(skyboxVertexShaderSource, skyboxFragmentShaderSource);
+
   stbi_set_flip_vertically_on_load(true);
   Model ourModel(
       (std::string(PROJECT_SOURCE_DIR) + "/resource/nanosuit.obj").c_str());
@@ -90,17 +98,48 @@ int main() {
   //        0, 1, 3,  // first Triangle
   //        1, 2, 3   // second Triangle
   //    };
-  float vertices[] = {// position			//color
-                      -0.5, -0.5, -0.5, 0.5,  -0.5, -0.5, 0.5,  0.5, -0.5, -0.5,
-                      0.5,  -0.5, -0.5, -0.5, 0.5,  0.5,  -0.5, 0.5, 0.5,  0.5,
-                      0.5,  -0.5, 0.5,  0.5,  0.0,  0.0,  0.0,  1.0, 0.0,  0.0,
-                      1.0,  1.0,  0.0,  0.0,  1.0,  0.0,  0.0,  0.0, 1.0,  1.0,
-                      0.0,  1.0,  1.0,  1.0,  1.0,  0.0,  1.0,  1.0};
-  unsigned int indices[] = {0, 1, 2, 1, 3, 4};
-  unsigned int indices2[] = {
-      3, 1, 2, 1, 0, 3, 3, 6, 2, 3, 7, 6, 7, 0, 4, 7, 3, 0,
-      6, 5, 1, 2, 1, 6, 5, 6, 7, 4, 5, 7, 4, 0, 1, 5, 1, 4,
-  };
+  // float vertices[] = {// position			//color
+  //                     -0.5, -0.5, -0.5, 0.5,  -0.5, -0.5, 0.5,  0.5, -0.5,
+  //                     -0.5, 0.5,  -0.5, -0.5, -0.5, 0.5,  0.5,  -0.5, 0.5,
+  //                     0.5,  0.5, 0.5,  -0.5, 0.5,  0.5,  0.0,  0.0,
+  //                     0.0,  1.0, 0.0,  0.0, 1.0,  1.0,  0.0,  0.0,  1.0, 0.0,
+  //                     0.0,  0.0, 1.0,  1.0, 0.0,  1.0,  1.0,  1.0,  1.0, 0.0,
+  //                     1.0,  1.0};
+  // unsigned int indices[] = {0, 1, 2, 1, 3, 4};
+  // unsigned int indices2[] = {
+  //     3, 1, 2, 1, 0, 3, 3, 6, 2, 3, 7, 6, 7, 0, 4, 7, 3, 0,
+  //     6, 5, 1, 2, 1, 6, 5, 6, 7, 4, 5, 7, 4, 0, 1, 5, 1, 4,
+  // };
+  float vertices[] = {
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
+      0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, -0.5f, 0.5f,  -0.5f,
+      0.0f,  0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,
+      0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,
+      0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
+      -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,
+      -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
+      1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,
+      1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, -0.5f,
+      0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,
+      0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
+      0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,
+      0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
   glm::vec3 model_positions[] = {
       glm::vec3(0.0f, 0.0f, -9.0f),
       glm::vec3(3.0f, 0.0f, -9.0f),
@@ -117,19 +156,19 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2,
-               GL_STATIC_DRAW);
+  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2,
+  //              GL_STATIC_DRAW);
 
   //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
   //    (void*)0);
   // position
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
   // it enables location at 0 to apply the attributes
   glEnableVertexAttribArray(0);
   // color
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                        (void *)(24 * sizeof(float)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                        (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   // note that this is allowed, the call to glVertexAttribPointer registered VBO
@@ -181,14 +220,69 @@ int main() {
   suit_shader.setMat4("view", view);
   suit_shader.setMat4("projection", camera->perspective);
 
+  skybox_shader.use();
+  skybox_shader.setMat4("view", view);
+  skybox_shader.setMat4("projection", camera->perspective);
+  skybox_shader.setInt("skybox", 0);
+
   glEnable(GL_DEPTH_TEST);
+  // glEnable(GL_CULL_FACE);
+  // glEnable(GL_BLEND);
+  // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  vector<std::string> faces{
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "right.jpg")
+          .c_str(),
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "left.jpg")
+          .c_str(),
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "top.jpg")
+          .c_str(),
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "bottom.jpg")
+          .c_str(),
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "front.jpg")
+          .c_str(),
+      (std::string(PROJECT_SOURCE_DIR) + "/resource/skybox/" + "back.jpg")
+          .c_str()};
+  unsigned int cubemapTexture = loadCubemap(faces);
+  float skyboxVertices[] = {
+      // positions
+      -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+      1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
+
+      -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
+      -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
+
+      1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
+      1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
+
+      -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+      1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+
+      -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
+      1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
+
+      -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+      1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
+  unsigned int skyboxVBO;
+  glGenBuffers(1, &skyboxVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+  unsigned int skyboxVAO;
+  glGenVertexArrays(1, &skyboxVAO);
+  glBindVertexArray(skyboxVAO);
+
+  glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices,
+               GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+
   while (!glfwWindowShouldClose(window)) {
     // input
     // -----
     framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
     processCameraInput(window);
     view = camera->updateView();
+
     box_shader.use();
+    box_shader.setVec3("cameraPos", camera->getPos());
     box_shader.setMat4("view", view);
     box_shader.setMat4("projection", camera->perspective);
 
@@ -199,10 +293,9 @@ int main() {
 
     // draw our first triangle
     // glUseProgram(shaderProgram);
-    glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no
-                             // need to bind it every time, but we'll do so to
-                             // keep things a bit more organized
-                             // glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(VAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glm::mat4 model = glm::mat4(1.0f);
     for (int i = 0; i < 3; ++i) {
       model = glm::mat4(1.0f);
@@ -211,7 +304,8 @@ int main() {
       model = glm::rotate(model, angle + (float)glfwGetTime(),
                           glm::vec3(1.0f, 0.3f, 0.5f));
       box_shader.setMat4("model", model);
-      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+      // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
       suit_model_mat =
@@ -238,11 +332,26 @@ int main() {
           suit_model_mat, glm::vec3(1 / 1.001f, 1 / 1.001f, 1 / 1.001f));
     }
     suit_shader.use();
+    suit_shader.setVec3("cameraPos", camera->getPos());
     suit_shader.setMat4("model", suit_model_mat);
     suit_shader.setMat4("view", view);
     suit_shader.setMat4("projection", camera->perspective);
     ourModel.Draw(suit_shader);
 
+    // glDepthMask(GL_FALSE);
+    glDepthFunc(GL_LEQUAL);
+    skybox_shader.use();
+    // ... 设置观察和投影矩阵
+    skybox_shader.setMat4("view", glm::mat4(glm::mat3(view)));
+    skybox_shader.setMat4("projection", camera->perspective);
+    glBindVertexArray(skyboxVAO);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // std::cerr << glad_glGetError() << std::endl;
+    // glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
+    // ... 绘制剩下的场景
     // glBindVertexArray(0); // no need to unbind it every time
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved

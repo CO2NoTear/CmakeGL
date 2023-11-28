@@ -278,3 +278,4 @@ class Model {
     return textures;
   }
 };
+unsigned int loadCubemap(vector<std::string> faces);
