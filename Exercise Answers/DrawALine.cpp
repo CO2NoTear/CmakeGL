@@ -134,7 +134,7 @@ int main() {
   std::string shaderPath = PROJECT_SOURCE_DIR;
   Shader shaderProgram(
       (shaderPath + std::string("/Exercise Answers/") + "line.vs").c_str(),
-      (shaderPath + std::string("/GLTEST/") + "shader.fs").c_str());
+      (shaderPath + std::string("/Exercise Answers/") + "line.fs").c_str());
 
   glm::mat4 ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -0.1f, 1.0f);
   shaderProgram.use();
