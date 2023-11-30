@@ -343,7 +343,7 @@ int main() {
     skybox_shader.use();
     // ... 设置观察和投影矩阵
     skybox_shader.setMat4("view", glm::mat4(glm::mat3(view)));
-    skybox_shader.setMat4("projection", camera->perspective);
+    // skybox_shader.setMat4("projection", camera->perspective);
     glBindVertexArray(skyboxVAO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);

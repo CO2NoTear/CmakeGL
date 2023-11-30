@@ -12,7 +12,7 @@ notes are in my own repo: [Github:LearnGL](https://github.com/CO2NoTear/LearnOpe
 ## 实验1和2
 
 1. 渲染了三个立方体,一个巨大的人物模型
-2. wasd, lshift, space移动相机，方向键上下左右、+、-对人物模型进行操纵
+2. wasd, lshift, space移动相机，方向键上下左右、+、-对人物模型进行操纵，esc退出程序。
 3. 天空盒
 4. 立方体折射效果
 5. 立方体自动旋转
