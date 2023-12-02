@@ -10,6 +10,7 @@ struct Material {
 struct Light {
     vec3 position;
 
+    vec3 color;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -18,9 +19,6 @@ struct Light {
 out vec4 FragColor;
 in vec3 Normal;
 in vec3 FragPos;
-uniform vec3 lightPos;
-// uniform vec3 objectColor;
-uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
@@ -35,7 +33,7 @@ void main()
     // normalization reduces the computation wightload
     vec3 norm = normalize(Normal);
     // float specularStrength = 0.5;
-    vec3 lightDir = normalize(lightPos - FragPos);
+    vec3 lightDir = normalize(light.position - FragPos);
     // specular lighting
     vec3 viewDir = normalize(viewPos - FragPos);
     // utility function: reflect(dirFromLightToFrag, normal)

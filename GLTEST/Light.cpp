@@ -138,8 +138,8 @@ int main() {
 
   lightShader.use();
   // lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-  lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-  lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
+  lightShader.setVec3("light.color", 1.0f, 1.0f, 1.0f);
+  lightShader.setVec3("light.position", lightPos.x, lightPos.y, lightPos.z);
   // Material settings:
   // Bronze
   // lightShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
