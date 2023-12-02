@@ -23,7 +23,7 @@ int main() {
   glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 perspective =
       glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-  glm::vec3 lightPos = glm::vec3(1.2f, 1.0f, 2.0f);
+  glm::vec3 lightPos = glm::vec3(0.0f, 2.0f, 0.0f);
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, lightPos);
   model = glm::scale(model, glm::vec3(0.2f));
@@ -137,7 +137,6 @@ int main() {
   glEnableVertexAttribArray(1);
 
   lightShader.use();
-  lightShader.setMat4("model", glm::mat4(1.0f));
   // lightShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
   lightShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
   lightShader.setVec3("lightPos", lightPos.x, lightPos.y, lightPos.z);
@@ -150,10 +149,6 @@ int main() {
 
   // emerald
   lightShader.setInt("blinn", 1);
-  lightShader.setVec3("material.ambient", 0.0215, 0.1745, 0.0215);
-  lightShader.setVec3("material.diffuse", 0.07568, 0.61424, 0.07568);
-  lightShader.setVec3("material.specular", 0.633, 0.727811, 0.633);
-  lightShader.setFloat("material.shininess", 0.6f * 128);
 
   lightShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
   lightShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
@@ -170,7 +165,6 @@ int main() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    lightShader.use();
     glBindVertexArray(VAO);
     // perspective =
     //     glm::perspective((float)glfwGetTime(), 800.0f / 600.0f, 0.1f,
@@ -198,19 +192,27 @@ int main() {
     // view = glm::lookAt(cameraPos, cameraTarget, worldUp);
     // shaderProgram.setMat4("view", view);
     view = camera->updateView();
+    lampShader.use();
+    lampShader.setMat4("view", view);
+    lampShader.setMat4("projection", perspective);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    lightShader.use();
     lightShader.setVec3("viewPos", camera->getPos());
     lightShader.setMat4("view", view);
     lightShader.setMat4("projection", perspective);
 
-    glm::vec3 lampColor;
-    lampColor.x = sin(glfwGetTime() * 2.0f);
-    lampColor.y = sin(glfwGetTime() * 0.7f);
-    lampColor.z = sin(glfwGetTime() * 1.3f);
+    // glm::vec3 lampColor;
+    // lampColor.x = sin(glfwGetTime() * 2.0f);
+    // lampColor.y = sin(glfwGetTime() * 0.7f);
+    // lampColor.z = sin(glfwGetTime() * 1.3f);
+    glm::vec3 lampColor(1.0f,1.0f,0.0f);
 
     glm::vec3 diffuseColor =
         lampColor * glm::vec3(0.5f);    // lower the influence on diffuse
     glm::vec3 ambientColor =
         lampColor * glm::vec3(0.2f);    // lower the influence on ambient
+
 
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
       lightShader.setBool("blinn", 1);
@@ -221,13 +223,22 @@ int main() {
     lightShader.setVec3("light.ambient", ambientColor);
     lightShader.setVec3("light.diffuse", diffuseColor);
 
-    lampShader.use();
-    lampShader.setMat4("view", view);
-    lampShader.setMat4("projection", perspective);
+    lightShader.setMat4("model", translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    lightShader.setVec3("material.ambient", 0.0215, 0.1745, 0.0215);
+    lightShader.setVec3("material.diffuse", 0.07568, 0.61424, 0.07568);
+    lightShader.setVec3("material.specular", 0.633, 0.727811, 0.633);
+    lightShader.setFloat("material.shininess", 0.6f * 128);
+    lightShader.setFloat("material.alpha", 0.6f);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    lightShader.setMat4("model", translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+    lightShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+    lightShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+    lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    lightShader.setFloat("material.shininess", 32.0f);
+    lightShader.setFloat("material.alpha", 0.8f);
     glDrawArrays(GL_TRIANGLES, 0, 36);
-    lightShader.use();
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     // std::cout << glad_glGetError() << std::endl;
     // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

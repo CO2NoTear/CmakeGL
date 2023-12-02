@@ -5,6 +5,7 @@ struct Material {
     // uniform sampler2D;
     vec3 specular;
     float shininess;
+    float alpha;
 }; 
 struct Light {
     vec3 position;
@@ -62,5 +63,5 @@ void main()
 
 
     vec3 result = (ambient + diffuse + specular); 
-    FragColor = vec4(result, 0.6);
+    FragColor = vec4(result, material.alpha);
 }
