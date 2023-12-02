@@ -23,7 +23,7 @@ int main() {
   glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
   glm::mat4 perspective =
       glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-  glm::vec3 lightPos = glm::vec3(0.0f, 2.0f, 0.0f);
+  glm::vec3 lightPos = glm::vec3(0.0f, 1.0f, 2.0f);
   glm::mat4 model = glm::mat4(1.0f);
   model = glm::translate(model, lightPos);
   model = glm::scale(model, glm::vec3(0.2f));
@@ -236,7 +236,7 @@ int main() {
     lightShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
     lightShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     lightShader.setFloat("material.shininess", 32.0f);
-    lightShader.setFloat("material.alpha", 0.8f);
+    lightShader.setFloat("material.alpha", 1.0f);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // std::cout << glad_glGetError() << std::endl;

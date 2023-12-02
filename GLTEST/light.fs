@@ -38,12 +38,12 @@ void main()
     if(blinn)
     {
         vec3 halfwayDir = normalize(lightDir + viewDir);  
-        spec = pow(max(dot(norm, halfwayDir), 0.0), 16.0);
+        spec = pow(max(dot(norm, halfwayDir), 0.0), 2* material.shininess);
     }
     else
     {
         vec3 reflectDir = reflect(-lightDir, norm);
-        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     }
     // specular lighting is basically considering
     // how much source light can be seen by the viewer
@@ -55,6 +55,6 @@ void main()
     vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
 
-    vec3 result = (ambient + diffuse + specular); 
+    vec3 result = (ambient + diffuse + specular) * light.color; 
     FragColor = vec4(result, material.alpha);
 }
