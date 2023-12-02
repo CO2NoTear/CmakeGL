@@ -27,17 +27,12 @@ uniform bool blinn;
 void main()
 {
     // ambient lighting
-    // float ambientStrength = 0.1;
     vec3 ambient = material.ambient * light.ambient;
 
     // normalization reduces the computation wightload
     vec3 norm = normalize(Normal);
-    // float specularStrength = 0.5;
     vec3 lightDir = normalize(light.position - FragPos);
-    // specular lighting
     vec3 viewDir = normalize(viewPos - FragPos);
-    // utility function: reflect(dirFromLightToFrag, normal)
-    // vec3 reflectDir = reflect(-lightDir, norm);
     // 32 is how specular is the surface 
     float spec;
     if(blinn)
